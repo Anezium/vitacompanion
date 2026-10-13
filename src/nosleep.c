@@ -12,6 +12,9 @@ static SceUID nosleep_thid = -1;
 static SceUID nosleep_mtx = -1;
 static volatile bool nosleep_enabled = true;
 static volatile bool nosleep_locked = false;
+// Also keep the display from dimming and turning off. Waking a display that turned off shows the lock screen,
+// and DISABLE_AUTO_SUSPEND alone does not prevent that.
+static volatile bool keep_screen_enabled = true;
 
 static void nosleep_lock(void)
 {
@@ -65,6 +68,9 @@ static int nosleep_thread(unsigned int args, void *argp)
         {
             nosleep_unlock();
         }
+
+        if (keep_screen_enabled)
+            sceKernelPowerTick(SCE_KERNEL_POWER_TICK_DISABLE_OLED_DIMMING);
 
         sceKernelDelayThread(1000 * 1000);
     }
@@ -144,4 +150,17 @@ void nosleep_set_enabled(bool enabled)
 bool nosleep_is_enabled(void)
 {
     return nosleep_enabled;
+}
+
+void keep_screen_set_enabled(bool enabled)
+{
+    keep_screen_enabled = enabled;
+
+    if (enabled)
+        sceKernelPowerTick(SCE_KERNEL_POWER_TICK_DISABLE_OLED_DIMMING);
+}
+
+bool keep_screen_is_enabled(void)
+{
+    return keep_screen_enabled;
 }

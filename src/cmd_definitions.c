@@ -28,7 +28,7 @@ const cmd_definition cmd_definitions[] = {
     {.name = "quit", .description = "Quit an app by Title ID, or all apps", .min_arg_count = 1, .max_arg_count = 1, .validator = NULL, .executor = &cmd_quit},
     {.name = "reboot", .description = "Reboot the console", .min_arg_count = 0, .max_arg_count = 0, .validator = NULL, .executor = &cmd_reboot},
     {.name = "release", .description = "Release a synthetic input", .min_arg_count = 1, .max_arg_count = 2, .validator = &validate_release, .executor = &cmd_release},
-    {.name = "screen", .description = "Turn the screen on or off", .min_arg_count = 1, .max_arg_count = 1, .validator = NULL, .executor = &cmd_screen},
+    {.name = "screen", .description = "Turn the screen on or off; keep/nokeep/status control dimming and display-off prevention", .min_arg_count = 1, .max_arg_count = 1, .validator = NULL, .executor = &cmd_screen},
     {.name = "version", .description = "Display the Vita Companion version", .min_arg_count = 0, .max_arg_count = 0, .validator = NULL, .executor = &cmd_version},
     {.name = "wait", .description = "Wait for a duration such as 100ms or 3s", .min_arg_count = 1, .max_arg_count = 1, .validator = &validate_wait, .executor = &cmd_wait}
 };
@@ -127,8 +127,16 @@ void cmd_screen(char **arg_list, size_t arg_count, char *res_msg) {
   } else if (!strcmp(state, "off")) {
     scePowerRequestDisplayOff();
     strcpy(res_msg, "Turning display off...\n");
+  } else if (!strcmp(state, "keep")) {
+    keep_screen_set_enabled(true);
+    strcpy(res_msg, "Keep-screen enabled.\n");
+  } else if (!strcmp(state, "nokeep")) {
+    keep_screen_set_enabled(false);
+    strcpy(res_msg, "Keep-screen disabled.\n");
+  } else if (!strcmp(state, "status")) {
+    strcpy(res_msg, keep_screen_is_enabled() ? "Keep-screen enabled.\n" : "Keep-screen disabled.\n");
   } else {
-    strcpy(res_msg, "Error: param should be 'on' or 'off'\n");
+    strcpy(res_msg, "Error: param should be 'on', 'off', 'keep', 'nokeep' or 'status'\n");
   }
 }
 

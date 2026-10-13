@@ -96,7 +96,7 @@ echo 'press cross; wait 100ms; release cross' | nc IP_TO_PSVITA 1338
 | `quit`    | `<TITLEID>` or `all`            | quit an application by id, or all running applications |
 | `reboot`  | none                            | reboot the console           |
 | `release` | input target                    | release one input or all synthetic input |
-| `screen`  | `on` or `off`                   | turn screen on or off        |
+| `screen`  | `on`, `off`, `keep`, `nokeep`, `status` | turn screen on or off; `keep` (default) stops dimming and display-off so the lock screen never appears |
 | `version` | none                            | display the loaded Vita Companion module version |
 | `wait`    | duration ending in `ms` or `s`  | wait before executing the next chained command |
 
